@@ -1463,8 +1463,10 @@ table.data-table tr:last-child td {
     vertical-align: middle !important;
   }
   table.data-table tfoot td,
-  table.landscape-table tfoot td {
-    background-color: #F8FAFC !important;
+  table.landscape-table tfoot td,
+  tr.total-row td,
+  .total-row td {
+    background-color: #E2E8F0 !important;
     color: #0F172A !important;
     border: 1px solid #475569 !important;
     border-top: 2px solid #1E293B !important;
@@ -1764,13 +1766,29 @@ table.data-table tr:last-child td {
 }
 
 .aurora-doc-card table.data-table tfoot td,
-.aurora-doc-card table.landscape-table tfoot td {
-  background-color: var(--bg-surface-elevated);
-  color: var(--text-main);
+.aurora-doc-card table.landscape-table tfoot td,
+table.data-table tfoot td,
+table.landscape-table tfoot td,
+tr.total-row td,
+.total-row td {
+  background-color: #E2E8F0 !important;
+  color: #0F172A !important;
   font-weight: 700;
-  border-top: 2px solid var(--border-color);
-  border-bottom: none;
+  border-top: 2px solid #64748B !important;
+  border-bottom: 2px solid #64748B !important;
   padding: 9px 12px;
+}
+
+[data-theme="dark"] .aurora-doc-card table.data-table tfoot td,
+[data-theme="dark"] .aurora-doc-card table.landscape-table tfoot td,
+[data-theme="dark"] table.data-table tfoot td,
+[data-theme="dark"] table.landscape-table tfoot td,
+[data-theme="dark"] tr.total-row td,
+[data-theme="dark"] .total-row td {
+  background-color: #334155 !important;
+  color: #F8FAFC !important;
+  border-top: 2px solid #64748B !important;
+  border-bottom: 2px solid #64748B !important;
 }
 
 .aurora-doc-card table.data-table tbody tr:last-child td:not(:has(~ tfoot)),

@@ -376,9 +376,6 @@ function renderDashboardShell(container) {
               <div class="user-role">${state.user.role}</div>
             </div>
           </div>
-          <button id="logout-button" class="logout-btn">
-            ${icons.logout} <span>Keluar</span>
-          </button>
         </div>
       </aside>
 
@@ -417,14 +414,6 @@ function renderDashboardShell(container) {
       const tab = link.getAttribute('data-tab');
       switchTab(tab);
     });
-  });
-
-  document.getElementById('logout-button').addEventListener('click', () => {
-    localStorage.removeItem('assetcare_token');
-    state.token = '';
-    state.user = null;
-    showToast('Anda telah berhasil keluar.');
-    renderApp();
   });
 
   loadCurrentTab();
@@ -2571,12 +2560,12 @@ async function loadAuroraRekapReport() {
                 `).join('')}
               </tbody>
               <tfoot>
-                <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                  <td colspan="2" style="text-align: right;">TOTAL KESELURUHAN:</td>
-                  <td class="mono" style="text-align: center;">${summary.total_assets} Unit</td>
-                  <td class="mono" style="text-align: center;">100.00%</td>
-                  <td class="mono" style="text-align: right;">${formatRupiah(summary.total_value)}</td>
-                  <td class="mono" style="text-align: center;">100.00%</td>
+                <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                  <td colspan="2" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN:</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">${summary.total_assets} Unit</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">100.00%</td>
+                  <td class="mono" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">${formatRupiah(summary.total_value)}</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">100.00%</td>
                 </tr>
               </tfoot>
             </table>
@@ -2618,11 +2607,11 @@ async function loadAuroraRekapReport() {
                 `).join('')}
               </tbody>
               <tfoot>
-                <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                  <td colspan="3" style="text-align: right;">TOTAL KESELURUHAN:</td>
-                  <td class="mono" style="text-align: center;">${summary.total_assets} Unit</td>
-                  <td class="mono" style="text-align: center;">100.00%</td>
-                  <td class="mono" style="text-align: right;">${formatRupiah(summary.total_value)}</td>
+                <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                  <td colspan="3" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN:</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">${summary.total_assets} Unit</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">100.00%</td>
+                  <td class="mono" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">${formatRupiah(summary.total_value)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -2664,11 +2653,11 @@ async function loadAuroraRekapReport() {
                 `).join('')}
               </tbody>
               <tfoot>
-                <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                  <td colspan="3" style="text-align: right;">TOTAL KESELURUHAN:</td>
-                  <td class="mono" style="text-align: center;">${summary.total_assets} Unit</td>
-                  <td class="mono" style="text-align: center;">100.00%</td>
-                  <td class="mono" style="text-align: right;">${formatRupiah(summary.total_value)}</td>
+                <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                  <td colspan="3" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN:</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">${summary.total_assets} Unit</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">100.00%</td>
+                  <td class="mono" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">${formatRupiah(summary.total_value)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -2708,11 +2697,11 @@ async function loadAuroraRekapReport() {
                 `).join('')}
               </tbody>
               <tfoot>
-                <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                  <td colspan="2" style="text-align: right;">TOTAL KESELURUHAN:</td>
-                  <td class="mono" style="text-align: center;">${summary.total_maintenance} Kali</td>
-                  <td class="mono" style="color: #60A5FA; text-align: right;">${formatRupiah(summary.total_cost)}</td>
-                  <td class="mono" style="text-align: center;">100.00%</td>
+                <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                  <td colspan="2" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN:</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">${summary.total_maintenance} Kali</td>
+                  <td class="mono" style="color: #0F172A; text-align: right; font-weight: 700; background-color: #E2E8F0 !important;">${formatRupiah(summary.total_cost)}</td>
+                  <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">100.00%</td>
                 </tr>
               </tfoot>
             </table>
@@ -2774,12 +2763,12 @@ async function loadAuroraDetailReport() {
               `).join('')}
             </tbody>
             <tfoot>
-              <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                <td colspan="3" style="text-align: right;">TOTAL KESELURUHAN (77 ASET):</td>
-                <td class="mono" style="text-align: center;">${totalQty} Buah</td>
-                <td colspan="4"></td>
-                <td class="mono" style="text-align: right; color: var(--primary); font-size: 13px;">${formatRupiah(totalVal)}</td>
-                <td></td>
+              <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                <td colspan="3" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN (77 ASET):</td>
+                <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">${totalQty} Buah</td>
+                <td colspan="4" style="background-color: #E2E8F0 !important;"></td>
+                <td class="mono" style="text-align: right; color: #0F172A !important; font-weight: 700; font-size: 13px; background-color: #E2E8F0 !important;">${formatRupiah(totalVal)}</td>
+                <td style="background-color: #E2E8F0 !important;"></td>
               </tr>
             </tfoot>
           </table>
@@ -2848,10 +2837,10 @@ async function loadAuroraMaintenanceReport() {
               </tbody>
               ${sections.bulan_ini.length > 0 ? `
                 <tfoot>
-                  <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                    <td colspan="6" style="text-align: right;">SUBTOTAL BULAN INI:</td>
-                    <td class="mono" style="text-align: right; color: var(--primary);">${formatRupiah(summary.cost_bulan_ini)}</td>
-                    <td colspan="2"></td>
+                  <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                    <td colspan="6" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">SUBTOTAL BULAN INI:</td>
+                    <td class="mono" style="text-align: right; color: #0F172A !important; font-weight: 700; background-color: #E2E8F0 !important;">${formatRupiah(summary.cost_bulan_ini)}</td>
+                    <td colspan="2" style="background-color: #E2E8F0 !important;"></td>
                   </tr>
                 </tfoot>
               ` : ''}
@@ -2895,10 +2884,10 @@ async function loadAuroraMaintenanceReport() {
                 `).join('')}
               </tbody>
               <tfoot>
-                <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                  <td colspan="6" style="text-align: right;">TOTAL BIAYA PEMELIHARAAN:</td>
-                  <td class="mono" style="text-align: right; color: #10B981; font-size: 13px;">${formatRupiah(summary.total_cost)}</td>
-                  <td colspan="2"></td>
+                <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                  <td colspan="6" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN BIAYA PEMELIHARAAN:</td>
+                  <td class="mono" style="text-align: right; color: #0F172A !important; font-size: 13px; font-weight: 700; background-color: #E2E8F0 !important;">${formatRupiah(summary.total_cost)}</td>
+                  <td colspan="2" style="background-color: #E2E8F0 !important;"></td>
                 </tr>
               </tfoot>
             </table>
@@ -2930,11 +2919,11 @@ async function loadAuroraConsolidatedReport() {
     const maintSummary = maintRes.summary;
 
     wrapper.innerHTML = `
-      <div class="aurora-doc-card">
-        ${getAuroraKopHeader('LAPORAN KONSOLIDASI MANAJEMEN ASET & PEMELIHARAAN')}
+      <!-- BAGIAN I: RINGKASAN REKAPITULASI -->
+      <div class="aurora-doc-card consolidated-page-card">
+        ${getAuroraKopHeader('LAPORAN KONSOLIDASI - RINGKASAN EKSEKUTIF', 'Bagian I')}
 
-        <!-- BAGIAN I: RINGKASAN REKAPITULASI -->
-        <div style="margin-bottom: 36px;">
+        <div style="margin-bottom: 24px;">
           <div class="report-section-badge">BAGIAN I. RINGKASAN & REKAPITULASI EKSEKUTIF</div>
           
           <div class="kpi-row" style="margin: 16px 0 24px 0;">
@@ -2981,12 +2970,12 @@ async function loadAuroraConsolidatedReport() {
                     `).join('')}
                   </tbody>
                   <tfoot>
-                    <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                      <td colspan="2" style="text-align: right;">TOTAL:</td>
-                      <td class="mono">${summary.total_assets} Unit</td>
-                      <td class="mono">100.00%</td>
-                      <td class="mono">${formatRupiah(summary.total_value)}</td>
-                      <td class="mono">100.00%</td>
+                    <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                      <td colspan="2" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN:</td>
+                      <td class="mono" style="background-color: #E2E8F0 !important; color: #0F172A !important;">${summary.total_assets} Unit</td>
+                      <td class="mono" style="background-color: #E2E8F0 !important; color: #0F172A !important;">100.00%</td>
+                      <td class="mono" style="background-color: #E2E8F0 !important; color: #0F172A !important;">${formatRupiah(summary.total_value)}</td>
+                      <td class="mono" style="background-color: #E2E8F0 !important; color: #0F172A !important;">100.00%</td>
                     </tr>
                   </tfoot>
                 </table>
@@ -3013,11 +3002,11 @@ async function loadAuroraConsolidatedReport() {
                     `).join('')}
                   </tbody>
                   <tfoot>
-                    <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                      <td colspan="3" style="text-align: right;">TOTAL:</td>
-                      <td class="mono">${summary.total_assets} Unit</td>
-                      <td class="mono">100.00%</td>
-                      <td class="mono">${formatRupiah(summary.total_value)}</td>
+                    <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                      <td colspan="3" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN:</td>
+                      <td class="mono" style="background-color: #E2E8F0 !important; color: #0F172A !important;">${summary.total_assets} Unit</td>
+                      <td class="mono" style="background-color: #E2E8F0 !important; color: #0F172A !important;">100.00%</td>
+                      <td class="mono" style="background-color: #E2E8F0 !important; color: #0F172A !important;">${formatRupiah(summary.total_value)}</td>
                     </tr>
                   </tfoot>
                 </table>
@@ -3025,97 +3014,105 @@ async function loadAuroraConsolidatedReport() {
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- BAGIAN II: DAFTAR DETAIL 77 UNIT ASET (LANDSCAPE TABLE) -->
-        <div class="page-break" style="margin-bottom: 36px;">
-          <div class="report-section-badge">BAGIAN II. RINCIAN SELURUH DATA INVENTARIS ASET (${allAssets.length} UNIT)</div>
-          <div class="landscape-table-wrapper" style="margin-top: 14px;">
-            <table class="landscape-table">
-              <thead>
+      <div class="page-break"></div>
+
+      <!-- BAGIAN II: DAFTAR DETAIL 77 UNIT ASET (HALAMAN BARU) -->
+      <div class="aurora-doc-card consolidated-page-card" style="page-break-before: always; break-before: page;">
+        ${getAuroraKopHeader('LAPORAN KONSOLIDASI - RINCIAN INVENTARIS ASET', 'Bagian II')}
+
+        <div class="report-section-badge">BAGIAN II. RINCIAN SELURUH DATA INVENTARIS ASET (${allAssets.length} UNIT)</div>
+        <div class="landscape-table-wrapper" style="margin-top: 14px;">
+          <table class="landscape-table">
+            <thead>
+              <tr>
+                <th style="width: 38px; text-align: center;">NO</th>
+                <th>NAMA ASET</th>
+                <th>KODE ASET</th>
+                <th style="text-align: center;">JUMLAH</th>
+                <th>JENIS BARANG</th>
+                <th>EQUITAS</th>
+                <th>LOKASI / RUANGAN</th>
+                <th style="text-align: center;">TANGGAL PEROLEHAN</th>
+                <th style="text-align: right;">NILAI PEROLEHAN (RP)</th>
+                <th style="text-align: center;">KONDISI ASET</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${allAssets.map(a => `
                 <tr>
-                  <th style="width: 38px; text-align: center;">NO</th>
-                  <th>NAMA ASET</th>
-                  <th>KODE ASET</th>
-                  <th style="text-align: center;">JUMLAH</th>
-                  <th>JENIS BARANG</th>
-                  <th>EQUITAS</th>
-                  <th>LOKASI / RUANGAN</th>
-                  <th style="text-align: center;">TANGGAL PEROLEHAN</th>
-                  <th style="text-align: right;">NILAI PEROLEHAN (RP)</th>
-                  <th style="text-align: center;">KONDISI ASET</th>
+                  <td class="mono" style="text-align: center; color: var(--text-subtle);">${a.item_no}</td>
+                  <td style="font-weight: 600;">${a.name}</td>
+                  <td class="mono">${a.code || '-'}</td>
+                  <td class="mono" style="text-align: center;">${a.quantity} Buah</td>
+                  <td>${a.category_name}</td>
+                  <td class="mono">${a.equity || 'AURORA'}</td>
+                  <td>${a.room_name}</td>
+                  <td class="mono" style="text-align: center;">${a.purchase_date}</td>
+                  <td class="mono" style="text-align: right; font-weight: 600;">${formatRupiah(a.value)}</td>
+                  <td style="text-align: center; font-weight: 500;">${a.condition_name || 'Baik'}</td>
                 </tr>
-              </thead>
-              <tbody>
-                ${allAssets.map(a => `
-                  <tr>
-                    <td class="mono" style="text-align: center; color: var(--text-subtle);">${a.item_no}</td>
-                    <td style="font-weight: 600;">${a.name}</td>
-                    <td class="mono">${a.code || '-'}</td>
-                    <td class="mono" style="text-align: center;">${a.quantity} Buah</td>
-                    <td>${a.category_name}</td>
-                    <td class="mono">${a.equity || 'AURORA'}</td>
-                    <td>${a.room_name}</td>
-                    <td class="mono" style="text-align: center;">${a.purchase_date}</td>
-                    <td class="mono" style="text-align: right; font-weight: 600;">${formatRupiah(a.value)}</td>
-                    <td style="text-align: center; font-weight: 500;">${a.condition_name || 'Baik'}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-              <tfoot>
-                <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                  <td colspan="3" style="text-align: right;">TOTAL KESELURUHAN (77 ASET):</td>
-                  <td class="mono" style="text-align: center;">${allAssets.reduce((s, a) => s + (a.quantity || 1), 0)} Buah</td>
-                  <td colspan="4"></td>
-                  <td class="mono" style="text-align: right; color: var(--primary); font-size: 13px;">${formatRupiah(summary.total_value)}</td>
-                  <td></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                <td colspan="3" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN (77 ASET):</td>
+                <td class="mono" style="text-align: center; background-color: #E2E8F0 !important; color: #0F172A !important;">${allAssets.reduce((s, a) => s + (a.quantity || 1), 0)} Buah</td>
+                <td colspan="4" style="background-color: #E2E8F0 !important;"></td>
+                <td class="mono" style="text-align: right; color: #0F172A !important; font-weight: 700; font-size: 13px; background-color: #E2E8F0 !important;">${formatRupiah(summary.total_value)}</td>
+                <td style="background-color: #E2E8F0 !important;"></td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
+      </div>
 
-        <!-- BAGIAN III: PEMELIHARAAN -->
-        <div class="page-break">
-          <div class="report-section-badge">BAGIAN III. DAFTAR PEMELIHARAAN & PERAWATAN ASET</div>
-          <div class="table-container" style="margin-top: 14px;">
-            <table class="data-table">
-              <thead>
+      <div class="page-break"></div>
+
+      <!-- BAGIAN III: PEMELIHARAAN (HALAMAN BARU) -->
+      <div class="aurora-doc-card consolidated-page-card" style="page-break-before: always; break-before: page;">
+        ${getAuroraKopHeader('LAPORAN KONSOLIDASI - PEMELIHARAAN & PENGESAHAN', 'Bagian III')}
+
+        <div class="report-section-badge">BAGIAN III. DAFTAR PEMELIHARAAN & PERAWATAN ASET</div>
+        <div class="table-container" style="margin-top: 14px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 38px; text-align: center;">NO</th>
+                <th>NAMA ASET</th>
+                <th>JENIS BARANG</th>
+                <th>TIPE PERAWATAN</th>
+                <th style="text-align: center;">TANGGAL PELAKSANAAN</th>
+                <th style="text-align: center;">JUMLAH</th>
+                <th style="text-align: right;">BIAYA (RP)</th>
+                <th style="text-align: center;">BUKTI</th>
+                <th>KETERANGAN / TINDAKAN</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${maintSections.bulan_kemarin.map((m, idx) => `
                 <tr>
-                  <th style="width: 38px; text-align: center;">NO</th>
-                  <th>NAMA ASET</th>
-                  <th>JENIS BARANG</th>
-                  <th>TIPE PERAWATAN</th>
-                  <th style="text-align: center;">TANGGAL PELAKSANAAN</th>
-                  <th style="text-align: center;">JUMLAH</th>
-                  <th style="text-align: right;">BIAYA (RP)</th>
-                  <th style="text-align: center;">BUKTI</th>
-                  <th>KETERANGAN / TINDAKAN</th>
+                  <td class="mono" style="text-align: center;">${idx + 1}</td>
+                  <td style="font-weight: 600;">${m.item_name}</td>
+                  <td>${m.category_name}</td>
+                  <td style="font-weight: 500;">${m.maint_type}</td>
+                  <td class="mono" style="text-align: center;">${m.request_date}</td>
+                  <td class="mono" style="text-align: center;">${m.quantity} ${m.unit}</td>
+                  <td class="mono" style="text-align: right; font-weight: 600; color: var(--primary);">${formatRupiah(m.cost)}</td>
+                  <td class="mono" style="text-align: center;">${m.proof || '-'}</td>
+                  <td>${m.notes || '-'}</td>
                 </tr>
-              </thead>
-              <tbody>
-                ${maintSections.bulan_kemarin.map((m, idx) => `
-                  <tr>
-                    <td class="mono" style="text-align: center;">${idx + 1}</td>
-                    <td style="font-weight: 600;">${m.item_name}</td>
-                    <td>${m.category_name}</td>
-                    <td style="font-weight: 500;">${m.maint_type}</td>
-                    <td class="mono" style="text-align: center;">${m.request_date}</td>
-                    <td class="mono" style="text-align: center;">${m.quantity} ${m.unit}</td>
-                    <td class="mono" style="text-align: right; font-weight: 600; color: var(--primary);">${formatRupiah(m.cost)}</td>
-                    <td class="mono" style="text-align: center;">${m.proof || '-'}</td>
-                    <td>${m.notes || '-'}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-              <tfoot>
-                <tr style="font-weight: 700; background: var(--bg-surface-elevated);">
-                  <td colspan="6" style="text-align: right;">TOTAL BIAYA PEMELIHARAAN:</td>
-                  <td class="mono" style="text-align: right; color: #10B981; font-size: 13px;">${formatRupiah(maintSummary.total_cost)}</td>
-                  <td colspan="2"></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr class="total-row" style="font-weight: 700; background-color: #E2E8F0 !important; color: #0F172A !important;">
+                <td colspan="6" style="text-align: right; background-color: #E2E8F0 !important; color: #0F172A !important;">TOTAL KESELURUHAN BIAYA PEMELIHARAAN:</td>
+                <td class="mono" style="text-align: right; color: #0F172A !important; font-size: 13px; font-weight: 700; background-color: #E2E8F0 !important;">${formatRupiah(maintSummary.total_cost)}</td>
+                <td colspan="2" style="background-color: #E2E8F0 !important;"></td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
 
         <!-- Lembar Pengesahan Resmi -->
