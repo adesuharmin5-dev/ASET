@@ -1,0 +1,6 @@
+Dokumentasi akses admin sudah lengkap. Saya menjalankan backend dan build frontend bersamaan untuk menemukan masalah nyata sebelum uji alur.
+Action: execute_bash({"command":"sudo supervisorctl restart backend && sleep 2 && sudo supervisorctl status backend","cwd":"/app","timeout":30})
+Observation: backend: stopped
+backend: started
+backend                          RUNNING   pid 584, uptime 0:00:06
+Exit code: 0

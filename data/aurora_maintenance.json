@@ -1,0 +1,28 @@
+[
+  {
+    "section": "BULAN_KEMARIN",
+    "no": 1,
+    "name": "AC Bestlife",
+    "category": "Elektronik",
+    "maint_type": "Terencana",
+    "date": "2025-11-27",
+    "qty": 3,
+    "unit": "Buah",
+    "cost": 700000.00,
+    "proof": "-",
+    "notes": "Pembersihan & Service Rutin"
+  },
+  {
+    "section": "BULAN_KEMARIN",
+    "no": 2,
+    "name": "Printer DotMatrix Unicorn DM76AC",
+    "category": "Elektronik",
+    "maint_type": "Tidak Terencana",
+    "date": "2026-02-12",
+    "qty": 1,
+    "unit": "Buah",
+    "cost": 550000.00,
+    "proof": "-",
+    "notes": "Penggantian beberapa sparepart"
+  }
+]

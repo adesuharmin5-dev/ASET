@@ -1,0 +1,7 @@
+Build berhasil tanpa error. Sekarang saya uji login, dashboard, dan dokumentasi API melalui alamat backend yang dipakai aplikasi.
+Action: execute_bash({"command":"API_URL=$(grep REACT_APP_BACKEND_URL /app/frontend/.env | cut -d '=' -f2) && TOKEN=$(curl -s -X POST \"$API_URL/api/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"Admin@12345\"}' | python3 -c \"import sys,json; print(json.load(sys.stdin)['token'])\") && echo \"TOKEN_OK=${#TOKEN}\" && curl -s -o /tmp/dashboard.json -w \"DASHBOARD_HTTP=%{http_code}\\n\" \"$API_URL/api/dashboard\" -H \"Authorization: Bearer $TOKEN\" && python3 -c \"import json; d=json.load(open('/tmp/dashboard.json')); print('ASSET_COUNT=',d['asset_count'])\" && curl -s -o /tmp/docs -w \"DOCS_HTTP=%{http_code}\\n\" \"$API_URL/docs\"","cwd":"/app","timeout":60})
+Observation: TOKEN_OK=191
+DASHBOARD_HTTP=200
+ASSET_COUNT= 0
+DOCS_HTTP=200
+Exit code: 0

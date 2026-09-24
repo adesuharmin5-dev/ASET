@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aurora Aset : Dokumentasi REST API</title>
+  <link rel="stylesheet" href="/app.css">
+  <style>
+    .docs-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    .endpoint-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .endpoint-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+      background-color: var(--bg-surface-elevated);
+      transition: background-color 0.15s;
+    }
+    .endpoint-header:hover {
+      background-color: #1E2D44;
+    }
+    .method-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 3px;
+      min-width: 60px;
+      text-align: center;
+    }
+    .method-get { background-color: rgba(16, 185, 129, 0.2); color: #34D399; }
+    .method-post { background-color: rgba(37, 99, 235, 0.2); color: #60A5FA; }
+    .method-put { background-color: rgba(245, 158, 11, 0.2); color: #FBBF24; }
+    .method-delete { background-color: rgba(239, 68, 68, 0.2); color: #F87171; }
+    .endpoint-path {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+    .endpoint-summary {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-left: auto;
+    }
+    .endpoint-details {
+      padding: 18px;
+      border-top: 1px solid var(--border-color);
+      display: none;
+    }
+    .endpoint-details.open {
+      display: block;
+    }
+    pre.code-block {
+      background-color: #070B12;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #93C5FD;
+      overflow-x: auto;
+      margin: 8px 0 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="docs-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+      <div>
+        <a href="/" style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-subtle); margin-bottom: 8px;">
+          ← Kembali ke Dashboard Aplikasi
+        </a>
+        <h1 style="font-size: 26px; font-weight: 700; color: #FFFFFF;">Dokumentasi REST API Aurora Aset</h1>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
+          Spesifikasi OpenAPI 3.0 untuk integrasi pihak ketiga, skrip, dan otomasi manajemen aset.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <a href="/api/docs/spec" target="_blank" class="btn btn-outline btn-sm">
+          Unduh OpenAPI JSON
+        </a>
+      </div>
+    </div>
+
+    <!-- Auth Token Helper -->
+    <div class="panel" style="margin-bottom: 28px;">
+      <div class="panel-header">
+        <div class="panel-title">Header Autentikasi (Bearer Token)</div>
+      </div>
+      <div class="panel-body">
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+          Seluruh endpoint operasional (kecuali login) memerlukan header otorisasi JWT:
+        </p>
+        <pre class="code-block">Authorization: Bearer &lt;TOKEN_HASIL_LOGIN&gt;</pre>
+        <p style="font-size: 11px; color: var(--text-subtle);">
+          Lakukan request POST ke <span class="mono" style="color: #60A5FA;">/api/auth/login</span> dengan payload <span class="mono">{"username":"admin","password":"Admin@12345"}</span> untuk mendapatkan token.
+        </p>
+      </div>
+    </div>
+
+    <!-- Endpoints List Container -->
+    <div id="endpoints-list">
+      <div style="text-align: center; color: var(--text-muted); padding: 40px;">Memuat spesifikasi endpoint...</div>
+    </div>
+  </div>
+
+  <script>
+    async function loadDocs() {
+      const container = document.getElementById('endpoints-list');
+      try {
+        const res = await fetch('/api/docs/spec');
+        const spec = await res.json();
+        const paths = spec.paths || {};
+
+        let html = '';
+        for (const [pathUrl, methods] of Object.entries(paths)) {
+          for (const [method, details] of Object.entries(methods)) {
+            const m = method.toLowerCase();
+            const summary = details.summary || '';
+            const desc = details.description || '';
+            const params = details.parameters || [];
+            const reqBody = details.requestBody?.content?.['application/json']?.schema;
+
+            html += `
+              <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                  <span class="method-tag method-${m}">${method.toUpperCase()}</span>
+                  <span class="endpoint-path">/api${pathUrl}</span>
+                  <span class="endpoint-summary">${summary}</span>
+                </div>
+                <div class="endpoint-details">
+                  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">${desc || summary}</p>
+                  
+                  ${params.length > 0 ? `
+                    <div style="font-weight: 600; font-size: 11px; font-family: var(--font-mono); color: var(--text-subtle); margin-bottom: 6px;">QUERY / PATH PARAMETERS</div>
+                    <ul style="margin-left: 20px; font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+                      ${params.map(p => `<li><span class="mono" style="color: #93C5FD;">${p.name}</span> (${p.in}): ${p.description || ''}</li>`).join('')}
+                    </ul>
+                  ` : ''}
+
+                  ${reqBody ? `
+                    <div style="font-weight: 600; font-size: 11px; font-family: var(--font-mono); color: var(--text-subtle); margin-bottom: 6px;">REQUEST BODY JSON SCHEMA</div>
+                    <pre class="code-block">${JSON.stringify(reqBody, null, 2)}</pre>
+                  ` : ''}
+
+                  <div style="font-weight: 600; font-size: 11px; font-family: var(--font-mono); color: var(--text-subtle); margin-bottom: 6px;">CONTOH CURL REQUEST</div>
+                  <pre class="code-block">curl -X ${method.toUpperCase()} "http://localhost:3000/api${pathUrl}" \\
+  -H "Authorization: Bearer &lt;TOKEN&gt;"${reqBody ? ' \\\n  -H "Content-Type: application/json" \\\n  -d \'{...}\'' : ''}</pre>
+                </div>
+              </div>
+            `;
+          }
+        }
+
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div style="color: var(--danger); text-align: center; padding: 20px;">Gagal memuat dokumentasi API: ${err.message}</div>`;
+      }
+    }
+
+    function toggleEndpoint(headerEl) {
+      const details = headerEl.nextElementSibling;
+      details.classList.toggle('open');
+    }
+
+    loadDocs();
+  </script>
+</body>
+</html>
