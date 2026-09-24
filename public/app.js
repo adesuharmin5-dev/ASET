@@ -220,37 +220,99 @@ async function loadSignatureSettings() {
   }
 }
 
-// App Entry Point (Direct Entry / SSO Ready)
+// App Entry Point (Protected with SSO Link & Login Enforcement)
 async function initApp() {
   document.documentElement.setAttribute('data-theme', state.theme);
   await loadCompanyProfile();
   await loadSignatureSettings();
 
-  if (state.token) {
+  // 1. Check if accessed via SSO link parameter (?sso_token=... or ?token=...)
+  const urlParams = new URLSearchParams(window.location.search);
+  const ssoToken = urlParams.get('sso_token') || urlParams.get('token');
+
+  if (ssoToken) {
     try {
-      const res = await api('/auth/me');
-      state.user = res.user;
+      showToast('Memverifikasi tautan SSO...', 'info');
+      const res = await api('/auth/sso/verify?token=' + encodeURIComponent(ssoToken));
+      if (res && res.token && res.user) {
+        state.token = res.token;
+        state.user = res.user;
+        localStorage.setItem('assetcare_token', res.token);
+        
+        // Remove token from browser URL address bar to keep it clean
+        const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+        
+        showToast(`Login via SSO berhasil! Selamat datang, ${res.user.name}`);
+      }
     } catch (e) {
-      // ignore
+      showToast('Link SSO tidak valid atau sudah kedaluwarsa. Silakan login manual.', 'error');
+      const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, cleanUrl);
     }
   }
-  // SSO / Direct Entry: Default to Administrator so app opens directly without login gate
-  if (!state.user) {
-    state.user = {
-      id: 1,
-      username: 'admin',
-      name: 'Administrator Aset',
-      role: 'admin'
-    };
+
+  // 2. Validate existing session token in localStorage
+  if (!state.user && state.token) {
+    try {
+      const res = await api('/auth/me');
+      if (res && res.user) {
+        state.user = res.user;
+      }
+    } catch (e) {
+      state.token = '';
+      state.user = null;
+      localStorage.removeItem('assetcare_token');
+    }
   }
-  await refreshMasterCache();
+
+  // 3. If authenticated, refresh cache master
+  if (state.user && state.token) {
+    await refreshMasterCache();
+  }
+
   renderApp();
 }
 
 function renderApp() {
   const root = document.getElementById('app');
-  // Always render dashboard directly - no manual login gate
-  renderDashboardShell(root);
+  // Mandatory check: if not authenticated, redirect to Login View
+  if (!state.user || !state.token) {
+    renderLoginView(root);
+  } else {
+    renderDashboardShell(root);
+  }
+}
+
+async function logoutUser() {
+  if (!confirm('Apakah Anda yakin ingin keluar dari sistem?')) return;
+  try {
+    await api('/auth/logout', { method: 'POST' });
+  } catch (e) {}
+  localStorage.removeItem('assetcare_token');
+  state.token = '';
+  state.user = null;
+  showToast('Anda telah keluar dari sistem.');
+  renderApp();
+}
+
+function switchLoginMode(mode) {
+  const pwdForm = document.getElementById('login-form');
+  const ssoForm = document.getElementById('login-sso-form');
+  const pwdBtn = document.getElementById('tab-login-pwd-btn');
+  const ssoBtn = document.getElementById('tab-login-sso-btn');
+
+  if (mode === 'sso') {
+    if (pwdForm) pwdForm.style.display = 'none';
+    if (ssoForm) ssoForm.style.display = 'block';
+    if (pwdBtn) pwdBtn.className = 'btn btn-sm btn-outline';
+    if (ssoBtn) ssoBtn.className = 'btn btn-sm btn-primary';
+  } else {
+    if (pwdForm) pwdForm.style.display = 'block';
+    if (ssoForm) ssoForm.style.display = 'none';
+    if (pwdBtn) pwdBtn.className = 'btn btn-sm btn-primary';
+    if (ssoBtn) ssoBtn.className = 'btn btn-sm btn-outline';
+  }
 }
 
 // 1. LOGIN VIEW
@@ -273,8 +335,19 @@ function renderLoginView(container) {
         </div>
 
         <h1 class="login-title">Masuk ke Sistem</h1>
-        <p class="login-desc">Gunakan kredensial admin untuk mengakses manajemen inventaris aset dan perawatan.</p>
+        <p class="login-desc">Sistem terproteksi. Silakan masuk menggunakan akun kredensial atau otorisasi Single Sign-On (SSO).</p>
 
+        <!-- Login Tabs: Akun vs Token SSO -->
+        <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+          <button type="button" id="tab-login-pwd-btn" class="btn btn-sm btn-primary" style="flex: 1;" onclick="switchLoginMode('pwd')">
+            Masuk dengan Akun
+          </button>
+          <button type="button" id="tab-login-sso-btn" class="btn btn-sm btn-outline" style="flex: 1;" onclick="switchLoginMode('sso')">
+            Gunakan Token SSO
+          </button>
+        </div>
+
+        <!-- Form 1: Username & Password -->
         <form id="login-form">
           <div class="form-group" style="margin-bottom: 14px;">
             <label class="form-label">Username</label>
@@ -291,13 +364,30 @@ function renderLoginView(container) {
           </button>
         </form>
 
-        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color); font-size: 11px; color: var(--text-subtle);">
-          Default Admin : <span class="mono" style="color: var(--text-main);">admin</span> / <span class="mono" style="color: var(--text-main);">Admin@12345</span>
+        <!-- Form 2: SSO Token Input -->
+        <form id="login-sso-form" style="display: none;">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label">Token atau Tautan SSO</label>
+            <textarea id="login-sso-input" class="form-input mono" rows="3" placeholder="Tempel token SSO atau seluruh tautan URL di sini..." required></textarea>
+            <span style="font-size: 11px; color: var(--text-subtle); margin-top: 4px; display: block;">
+              Anda dapat memasukkan token langsung atau seluruh link URL SSO yang diberikan oleh administrator.
+            </span>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">
+            Masuk dengan SSO
+          </button>
+        </form>
+
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color); font-size: 11px; color: var(--text-subtle); display: flex; justify-content: space-between; align-items: center;">
+          <span>Default: <span class="mono" style="color: var(--text-main);">admin</span> / <span class="mono" style="color: var(--text-main);">Admin@12345</span></span>
+          <span style="color: #10B981; font-weight: 500;">● Otorisasi Aktif</span>
         </div>
       </div>
     </div>
   `;
 
+  // Submit Password Form
   document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const u = document.getElementById('login-username').value;
@@ -317,6 +407,41 @@ function renderLoginView(container) {
       renderApp();
     } catch (err) {
       // toast shown in api helper
+    }
+  });
+
+  // Submit SSO Form
+  document.getElementById('login-sso-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    let raw = document.getElementById('login-sso-input').value.trim();
+    if (!raw) return;
+
+    // If whole URL pasted, extract sso_token parameter
+    if (raw.includes('sso_token=')) {
+      try {
+        const u = new URL(raw.startsWith('http') ? raw : 'http://dummy/' + raw);
+        raw = u.searchParams.get('sso_token') || raw;
+      } catch (err) {}
+    } else if (raw.includes('token=')) {
+      try {
+        const u = new URL(raw.startsWith('http') ? raw : 'http://dummy/' + raw);
+        raw = u.searchParams.get('token') || raw;
+      } catch (err) {}
+    }
+
+    try {
+      showToast('Memverifikasi token SSO...', 'info');
+      const res = await api('/auth/sso/verify?token=' + encodeURIComponent(raw));
+      if (res && res.token && res.user) {
+        state.token = res.token;
+        state.user = res.user;
+        localStorage.setItem('assetcare_token', res.token);
+        showToast(`Login via SSO berhasil! Selamat datang, ${res.user.name}`);
+        await refreshMasterCache();
+        renderApp();
+      }
+    } catch (err) {
+      showToast('Token SSO tidak valid atau sudah kedaluwarsa.', 'error');
     }
   });
 }
@@ -369,12 +494,17 @@ function renderDashboardShell(container) {
         </nav>
 
         <div class="sidebar-footer">
-          <div class="user-profile-card">
-            <div class="user-avatar">${(state.user.name || 'AD').substring(0, 2).toUpperCase()}</div>
-            <div class="user-meta">
-              <div class="user-name">${state.user.name}</div>
-              <div class="user-role">${state.user.role}</div>
+          <div class="user-profile-card" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+              <div class="user-avatar">${(state.user?.name || 'AD').substring(0, 2).toUpperCase()}</div>
+              <div class="user-meta" style="overflow: hidden;">
+                <div class="user-name" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${state.user?.name || 'Admin'}</div>
+                <div class="user-role">${state.user?.role || 'admin'}</div>
+              </div>
             </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="logoutUser()" title="Keluar dari Sistem" style="padding: 4px 8px; color: #EF4444; border-color: rgba(239, 68, 68, 0.35); flex-shrink: 0; display: flex; align-items: center; gap: 4px;">
+              ${icons.logout} <span style="font-size: 11px;">Keluar</span>
+            </button>
           </div>
         </div>
       </aside>
@@ -3300,6 +3430,58 @@ async function renderSettingsTab(container) {
         </div>
       </div>
 
+      <!-- SSO Integration & Link Generator Panel -->
+      <div class="panel" style="margin-bottom: 24px;">
+        <div class="panel-header">
+          <div class="panel-title">${icons.master} Integrasi Link SSO (Single Sign-On)</div>
+          <span class="badge badge-success">Proteksi Rute Aktif</span>
+        </div>
+        <div class="panel-body">
+          <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px; line-height: 1.6;">
+            Gunakan fitur ini untuk membuat <b>Tautan SSO Terenkripsi</b> resmi. Siapapun yang mengakses sistem melalui tautan SSO ini akan langsung login dan diarahkan ke Dashboard tanpa perlu mengisi username/password. Sebaliknya, siapapun yang mengakses link aplikasi biasa (meskipun mereka memiliki link seperti data aset atau laporan) <b>akan otomatis dihentikan dan diarahkan ke halaman Login</b>.
+          </p>
+
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 18px; margin-bottom: 12px;">
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px;">
+              <div style="flex: 1; min-width: 220px;">
+                <label class="form-label" style="font-size: 12px; font-weight: 600;">Masa Berlaku Link SSO</label>
+                <select id="sso-expiry-days" class="form-select">
+                  <option value="1">1 Hari (24 Jam)</option>
+                  <option value="7">7 Hari (1 Minggu)</option>
+                  <option value="30" selected>30 Hari (1 Bulan - Direkomendasikan)</option>
+                  <option value="90">90 Hari (3 Bulan)</option>
+                  <option value="365">365 Hari (1 Tahun)</option>
+                </select>
+              </div>
+              <div>
+                <button type="button" class="btn btn-primary" onclick="generateSsoLink()">
+                  ${icons.plus} Buat Link SSO Baru
+                </button>
+              </div>
+            </div>
+
+            <div id="sso-result-area" style="display: none; padding-top: 14px; border-top: 1px dashed var(--border-color);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <b style="font-size: 12px; color: var(--text-main);">Tautan SSO Siap Pakai:</b>
+                <span id="sso-expires-label" style="font-size: 11px; color: #10B981; font-weight: 500;"></span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="sso-generated-url" class="form-input mono" readonly style="background: var(--bg-card); cursor: text; font-size: 12px; color: #60A5FA;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="copySsoLink()" title="Salin Link SSO">
+                  ${icons.copy} Salin Link
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="testSsoLink()" title="Uji Coba di Tab Baru">
+                  ${icons.eye} Buka Link
+                </button>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; line-height: 1.5;">
+                💡 <b>Cara Menggunakan:</b> Salin dan bagikan link di atas kepada personil yang berhak atau pasang pada tombol portal internal / SSO Anda. Siapapun yang mengeklik link ini akan langsung diotentikasi ke sistem.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Navicat Instructions Panel -->
       <div class="panel" style="margin-bottom: 24px;">
         <div class="panel-header">
@@ -3608,6 +3790,58 @@ async function resetDemoConfirmation() {
     await refreshMasterCache();
     renderSettingsTab(document.getElementById('tab-content-area'));
   } catch (err) {}
+}
+
+async function generateSsoLink() {
+  const daysEl = document.getElementById('sso-expiry-days');
+  const days = daysEl ? daysEl.value : 30;
+
+  try {
+    const res = await api('/auth/sso/generate', {
+      method: 'POST',
+      body: JSON.stringify({ days })
+    });
+
+    const baseUrl = window.location.origin + window.location.pathname;
+    const fullSsoUrl = `${baseUrl}?sso_token=${res.sso_token}`;
+
+    const resultArea = document.getElementById('sso-result-area');
+    const inputUrl = document.getElementById('sso-generated-url');
+    const expiresLabel = document.getElementById('sso-expires-label');
+
+    if (resultArea && inputUrl) {
+      inputUrl.value = fullSsoUrl;
+      const expDate = new Date(res.expires_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+      if (expiresLabel) {
+        expiresLabel.innerText = `● Berlaku hingga: ${expDate}`;
+      }
+      resultArea.style.display = 'block';
+    }
+
+    showToast('Link SSO berhasil dibuat!');
+  } catch (err) {
+    showToast('Gagal membuat link SSO: ' + err.message, 'error');
+  }
+}
+
+function copySsoLink() {
+  const inputUrl = document.getElementById('sso-generated-url');
+  if (inputUrl && inputUrl.value) {
+    navigator.clipboard.writeText(inputUrl.value).then(() => {
+      showToast('Link SSO berhasil disalin ke clipboard!');
+    }).catch(() => {
+      inputUrl.select();
+      document.execCommand('copy');
+      showToast('Link SSO berhasil disalin!');
+    });
+  }
+}
+
+function testSsoLink() {
+  const inputUrl = document.getElementById('sso-generated-url');
+  if (inputUrl && inputUrl.value) {
+    window.open(inputUrl.value, '_blank');
+  }
 }
 
 // Global bootstrap
