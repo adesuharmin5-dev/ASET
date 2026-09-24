@@ -53,23 +53,22 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
 
-const DEFAULT_PORT = parseInt(process.env.PORT || '3000', 10);
+const DEFAULT_PORT = process.env.PORT || 3000;
 
 function startServer(port) {
-  const server = app.listen(port, '0.0.0.0', () => {
+  const server = app.listen(port, () => {
     console.log(`====================================================`);
-    console.log(`🚀 AssetCare siap digunakan!`);
-    console.log(`🌐 Aplikasi Web:      http://localhost:${port}`);
-    console.log(`📚 Dokumentasi API:   http://localhost:${port}/docs`);
+    console.log(`🚀 Aurora Aset siap digunakan!`);
+    console.log(`🌐 Port / Socket:     ${port}`);
+    console.log(`📚 Dokumentasi API:   /docs`);
     console.log(`🗄️ Database SQLite:   ${DB_PATH}`);
-    console.log(`🔑 Login Admin:       admin / Admin@12345`);
     console.log(`====================================================`);
   });
 
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.warn(`Port ${port} sedang terpakai, mencoba port ${port + 1}...`);
-      startServer(port + 1);
+      console.warn(`Port ${port} sedang terpakai, mencoba port ${Number(port) + 1}...`);
+      startServer(Number(port) + 1);
     } else {
       console.error('Server error:', err);
     }
@@ -77,3 +76,5 @@ function startServer(port) {
 }
 
 startServer(DEFAULT_PORT);
+
+module.exports = app;
